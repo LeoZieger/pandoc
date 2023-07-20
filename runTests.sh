@@ -23,6 +23,10 @@ for test in ${tests[@]}
 do
    echo "Running" $test
    ./dist-newstyle/build/x86_64-linux/ghc-9.4.4/pandoc-3.1.3/t/test-pandoc/build/test-pandoc/test-pandoc -p $test
-   echo "Renaming to ${test}.tix"
-   mv ./test/test-pandoc.tix tixfiles/${test}.tix
+   if [[ $? -gt 0 ]]
+   then
+    mv ./test/test-pandoc.tix tixfiles/${test}_FAIL.tix
+   else
+    mv ./test/test-pandoc.tix tixfiles/${test}_PASS.tix
+   fi
 done
