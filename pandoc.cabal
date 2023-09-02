@@ -753,6 +753,8 @@ test-suite test-pandoc
   type:           exitcode-stdio-1.0
   main-is:        test-pandoc.hs
   hs-source-dirs: test
+  ghc-options:    -fhpc
+                  -hpcdir ./mixfiles/
   build-depends:  pandoc,
                   Diff              >= 0.2     && < 0.5,
                   Glob              >= 0.7     && < 0.11,
