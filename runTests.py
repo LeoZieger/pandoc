@@ -8,13 +8,18 @@ TIX_DIRECTORY = Path("./tixfiles/")
 GEN_TIX_LOCATION = Path("./test-pandoc.tix")
 
 
+SEPERATOR = "."
+SUCCESS = "PASSED"
+FAILED = "FAILED"
+
+
 def escapeTestName(s):
     return s.replace('\\#', '\\\\#')
 
 
 def main():
     print('[INFO] Deleting every tix-file')
-    os.system('find . -name "*.tix" -type f -delete')
+    os.system(f'find {TIX_DIRECTORY} -name "*.tix" -type f -delete')
 
     print('[INFO] Collecting all available tests')
     proc = subprocess.run(['./dist-newstyle/build/x86_64-linux/ghc-9.4.4/pandoc-3.1.3/t/test-pandoc/build/test-pandoc/test-pandoc',
@@ -36,21 +41,21 @@ def main():
         test_result = proc.returncode
 
         if test_result == 0:
-            suffix = "PASS"
+            suffix = SUCCESS
         else:
-            suffix = "FAIL"
+            suffix = FAILED
             print(f"[ERROR] Test {test} failed")
 
         filename = test.replace(" ", "")
         filename = filename.replace("/", "")
 
         index = 2
-        if os.path.exists(TIX_DIRECTORY / f"{filename}_{suffix}.tix"):
-            while os.path.exists(TIX_DIRECTORY / (f"{filename}_{str(index)}_{suffix}.tix")):
+        if os.path.exists(TIX_DIRECTORY / f"{filename}{SEPERATOR}{suffix}.tix"):
+            while os.path.exists(TIX_DIRECTORY / (f"{filename}_{str(index)}{SEPERATOR}{suffix}.tix")):
                 index += 1
             filename = f"{filename}_{str(index)}"
 
-        filename = f"{filename}_{suffix}.tix"
+        filename = f"{filename}{SEPERATOR}{suffix}.tix"
 
         shutil.move(GEN_TIX_LOCATION, TIX_DIRECTORY / filename)
 
