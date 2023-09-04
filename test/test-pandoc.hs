@@ -52,6 +52,9 @@ import qualified Tests.Writers.TEI
 import qualified Tests.Writers.Markua
 import Text.Pandoc.Shared (inDirectory)
 
+import Test.Tasty.CoverageReporter
+
+
 tests :: FilePath -> TestTree
 tests pandocPath = testGroup "pandoc tests"
         [ Tests.Command.tests
@@ -116,4 +119,4 @@ main = do
     _ -> inDirectory "test" $ do
            fp <- getExecutablePath
            -- putStrLn $ "Using pandoc executable at " ++ fp
-           defaultMain $ tests fp
+           defaultMainWithIngredients [coverageReporter] $ tests fp
