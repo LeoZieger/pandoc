@@ -779,8 +779,7 @@ blockToHtmlInner opts (Div (ident, "section":dclasses, dkvs)
   let fragmentClass = case slideVariant of
                            RevealJsSlides -> "fragment"
                            _              -> "incremental"
-  let inDiv' zs = RawBlock (Format "html") ("<div class=\""
-                       <> fragmentClass <> "\">") :
+  let inDiv' zs = RawBlock (Format "html") ("<div>") : -- FAULTY
                    (zs ++ [RawBlock (Format "html") "</div>"])
   let breakOnPauses zs
         | slide = case splitBy isPause zs of
