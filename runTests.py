@@ -14,7 +14,9 @@ FAILED = "FAILED"
 
 
 def escapeTestName(s):
-    return s.replace('\\#', '\\\\#')
+    s = s.replace('\\', '\\\\')
+    s = s.replace('"', '\\\"')
+    return s
 
 
 def main():
@@ -22,11 +24,9 @@ def main():
     os.system(f'find {TIX_DIRECTORY} -name "*.tix" -type f -delete')
 
     print('[INFO] Collecting all available tests')
-    proc = subprocess.run(['./dist-newstyle/build/x86_64-linux/ghc-9.4.4/pandoc-3.1.3/t/test-pandoc/build/test-pandoc/test-pandoc',
-                        '-l'],
-                        stdout=subprocess.PIPE)
+    out = subprocess.check_output(['cabal', 'run', 'test-pandoc', '--', '-l'])
 
-    tests_text = proc.stdout.decode('UTF-8')
+    tests_text = out.decode('UTF-8')
     tests = tests_text.split('\n')
 
     tests = [x for x in tests if x != ""]
@@ -34,9 +34,12 @@ def main():
     for i, test in enumerate(tests):
         print(f"[INFO] Test {i+1} / {len(tests)} [{test}]")
 
-        proc = subprocess.run(['./dist-newstyle/build/x86_64-linux/ghc-9.4.4/pandoc-3.1.3/t/test-pandoc/build/test-pandoc/test-pandoc',
-                            '-p',
-                            f'$0 == \"{escapeTestName(test)}\"'])
+        proc = subprocess.run(['cabal',
+                               'run',
+                               'test-pandoc',
+                               '--',
+                               '-p',
+                               f'$0 == \"{escapeTestName(test)}\"'])
 
         test_result = proc.returncode
 
@@ -58,6 +61,16 @@ def main():
         filename = f"{filename}{SEPERATOR}{suffix}.tix"
 
         shutil.move(GEN_TIX_LOCATION, TIX_DIRECTORY / filename)
+
+        try:
+            os.remove("./test-pandoc.tix")
+        except:
+            pass
+
+        try:
+            os.remove("./test/test-pandoc.tix")
+        except:
+            pass
 
 if __name__ == "__main__":
     main()

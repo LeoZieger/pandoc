@@ -430,8 +430,6 @@ common common-options
                     -Wmissing-signatures
                     -fhide-source-paths
                     -- -Wmissing-export-lists
-                    -fhpc
-                    -hpcdir ./mixfiles/
 
   if impl(ghc >= 8.10)
     ghc-options:    -Wunused-packages
@@ -445,10 +443,13 @@ common common-options
 common common-executable
   import:           common-options
   build-depends:    pandoc
-  ghc-options:      -rtsopts -with-rtsopts=-A8m -threaded
+  ghc-options:      -rtsopts
+                    -with-rtsopts=-A8m
+                    -threaded
 
 library xml-light
   import:        common-options
+  ghc-options:   -fhpc
   build-depends: xml                   >= 1.3.12   && < 1.4,
                  xml-conduit           >= 1.9.1.1  && < 1.10,
                  xml-types             >= 0.3      && < 0.4,
@@ -463,6 +464,7 @@ library xml-light
 
 library
   import:        common-options
+  ghc-options:   -fhpc
   build-depends: xml-light,
                  Glob                  >= 0.7      && < 0.11,
                  JuicyPixels           >= 3.1.6.1  && < 3.4,
@@ -753,8 +755,6 @@ test-suite test-pandoc
   type:           exitcode-stdio-1.0
   main-is:        test-pandoc.hs
   hs-source-dirs: test
-  ghc-options:    -fhpc
-                  -hpcdir ./mixfiles/
   build-depends:  pandoc,
                   Diff              >= 0.2     && < 0.5,
                   Glob              >= 0.7     && < 0.11,
@@ -766,7 +766,7 @@ test-suite test-pandoc
                   mtl               >= 2.2     && < 2.4,
                   pandoc-types      >= 1.23    && < 1.24,
                   process           >= 1.2.3   && < 1.7,
-                  tasty             >= 0.11    && < 1.5,
+                  tasty             >= 0.11    && < 1.6,
                   tasty-golden      >= 2.3     && < 2.4,
                   tasty-hunit       >= 0.9     && < 0.11,
                   tasty-quickcheck  >= 0.8     && < 0.11,
