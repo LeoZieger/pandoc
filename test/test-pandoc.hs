@@ -57,7 +57,7 @@ import Test.Tasty.CoverageReporter (coverageReporter)
 tests :: FilePath -> TestTree
 tests pandocPath = testGroup "pandoc tests"
         [ Tests.Command.tests
-        -- , testGroup "Old" (Tests.Old.tests pandocPath)
+        , testGroup "Old" (Tests.Old.tests pandocPath)
         , testGroup "Shared" Tests.Shared.tests
         , testGroup "Writers"
           [ testGroup "Native" Tests.Writers.Native.tests
@@ -118,5 +118,5 @@ main = do
     _ -> inDirectory "test" $ do
            fp <- getExecutablePath
            -- putStrLn $ "Using pandoc executable at " ++ fp
-           --defaultMain $ tests fp
-           defaultMainWithIngredients [coverageReporter] $ tests fp
+           defaultMain $ tests fp
+           --defaultMainWithIngredients [coverageReporter] $ tests fp

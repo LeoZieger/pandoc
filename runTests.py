@@ -5,7 +5,9 @@ import os
 from pathlib import Path
 
 TIX_DIRECTORY = Path("./tixfiles/")
-GEN_TIX_LOCATION = Path("./test-pandoc.tix")
+GEN_TIX_LOCATION_1 = Path("./test-pandoc.tix")
+GEN_TIX_LOCATION_2 = Path("./test/test-pandoc.tix")
+GEN_TIX_LOCATION_COMB = Path("./combined-test-pandoc.tix")
 
 
 SEPERATOR = "."
@@ -60,17 +62,25 @@ def main():
 
         filename = f"{filename}{SEPERATOR}{suffix}.tix"
 
-        shutil.move(GEN_TIX_LOCATION, TIX_DIRECTORY / filename)
+        if os.path.exists(GEN_TIX_LOCATION_1) and not os.path.exists(GEN_TIX_LOCATION_2):
+            shutil.move(GEN_TIX_LOCATION_1, TIX_DIRECTORY / filename)
+        elif not os.path.exists(GEN_TIX_LOCATION_1) and os.path.exists(GEN_TIX_LOCATION_2):
+            shutil.move(GEN_TIX_LOCATION_2, TIX_DIRECTORY / filename)
+        elif os.path.exists(GEN_TIX_LOCATION_1) and os.path.exists(GEN_TIX_LOCATION_2):
+            print("combining")
+            proc = subprocess.run(['hpc',
+                                'combine',
+                                f'{GEN_TIX_LOCATION_1}',
+                                f'{GEN_TIX_LOCATION_2}',
+                                f'--output',
+                                f'{GEN_TIX_LOCATION_COMB}'])
 
-        try:
-            os.remove("./test-pandoc.tix")
-        except:
+            shutil.move(GEN_TIX_LOCATION_COMB, TIX_DIRECTORY / filename)
+            os.remove(GEN_TIX_LOCATION_1)
+            os.remove(GEN_TIX_LOCATION_2)
+        else:
             pass
 
-        try:
-            os.remove("./test/test-pandoc.tix")
-        except:
-            pass
 
 if __name__ == "__main__":
     main()
